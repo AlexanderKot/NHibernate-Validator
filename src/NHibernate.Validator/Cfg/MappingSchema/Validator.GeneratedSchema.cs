@@ -35,6 +35,7 @@ namespace NHibernate.Validator.Cfg.MappingSchema {
         [System.Xml.Serialization.XmlElementAttribute("rule", typeof(NhvmRule))]
         [System.Xml.Serialization.XmlElementAttribute("size", typeof(NhvmSize))]
         [System.Xml.Serialization.XmlElementAttribute("valid", typeof(NhvmValid))]
+        [System.Xml.Serialization.XmlElementAttribute("enum", typeof(NhvmEnum))]
         public object[] Items;
         
         /// <remarks/>
@@ -407,7 +408,7 @@ namespace NHibernate.Validator.Cfg.MappingSchema {
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string tags;
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("NhvXsd", "0.0.0.0")]
     [System.SerializableAttribute()]
@@ -647,5 +648,24 @@ namespace NHibernate.Validator.Cfg.MappingSchema {
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string[] Text;
+    }
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("NhvXsd", "0.0.0.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "urn:nhibernate-validator-1.0")]
+    [System.Xml.Serialization.XmlRootAttribute("enum", Namespace = "urn:nhibernate-validator-1.0", IsNullable = false)]
+    public partial class NhvmEnum
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string message;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string tags;
     }
 }

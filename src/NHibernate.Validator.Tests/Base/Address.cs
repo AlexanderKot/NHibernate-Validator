@@ -20,6 +20,7 @@ namespace NHibernate.Validator.Tests.Base
 		private string line2;
 		private string state;
 		private string zip;
+		private AddressType addressType = AddressType.Phisical; 
 
 		[Min(1), Range(Max = 2000), Max(2500)]
 		public long Id
@@ -69,6 +70,19 @@ namespace NHibernate.Validator.Tests.Base
 			get { return internalValid; }
 			set { internalValid = value; }
 		}
+
+		[Enum]
+		public AddressType AddressType
+		{
+			get { return addressType; }
+			set { addressType = value; }
+		}
+	}
+
+	public enum AddressType : byte
+	{
+		Legal = 0,
+		Phisical = 1
 	}
 
 	public class AddressDef: ValidationDef<Address>
@@ -93,6 +107,7 @@ namespace NHibernate.Validator.Tests.Base
 				.MatchWith("[0-9]+");
 			Define(x => x.InternalValid)
 				.IsTrue();
+		    Define(x => x.AddressType).Enum();
 		}
 	}
 }

@@ -16,5 +16,6 @@
 		<property name="Line1" />
 		<property name="Line2" />
 		<property name ="floor" access="field"/>
+		<property name="AddressType" />
 	</class>
 </hibernate-mapping>

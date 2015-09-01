@@ -43,6 +43,7 @@ namespace NHibernate.Validator.Cfg.MappingSchema
 			wellKnownRules[typeof(NhvmFileexists)] = ConvertToFileExists;
 			wellKnownRules[typeof(NhvmValid)] = ConvertToValid;
 			wellKnownRules[typeof(NhvmIban)] = ConvertToIBAN;
+			wellKnownRules[typeof(NhvmEnum)] = ConvertToEnum;
 		}
 
 		private static Attribute ConvertToDecimalMin(XmlNhvmRuleConverterArgs rule)
@@ -561,7 +562,6 @@ namespace NHibernate.Validator.Cfg.MappingSchema
 			return thisAttribute;
 		}
 
-
 		private static Attribute ConvertToFileExists(XmlNhvmRuleConverterArgs rule)
 		{
 			NhvmFileexists fileExistsRule = (NhvmFileexists)rule.schemaRule;
@@ -587,6 +587,21 @@ namespace NHibernate.Validator.Cfg.MappingSchema
 				thisAttribute.Message = ibanRule.message;
 			}
 			AssignTagsFromString(thisAttribute, ibanRule.tags);
+
+			return thisAttribute;
+		}
+
+		private static Attribute ConvertToEnum(XmlNhvmRuleConverterArgs rule)
+		{
+			NhvmEnum notNullRule = (NhvmEnum)rule.schemaRule;
+			EnumAttribute thisAttribute = new EnumAttribute();
+			log.Info("Converting to EnumAttribute");
+
+			if (notNullRule.message != null)
+			{
+				thisAttribute.Message = notNullRule.message;
+			}
+			AssignTagsFromString(thisAttribute, notNullRule.tags);
 
 			return thisAttribute;
 		}
