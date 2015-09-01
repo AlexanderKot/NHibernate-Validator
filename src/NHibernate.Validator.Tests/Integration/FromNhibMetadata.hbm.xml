@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+					 namespace="NHibernate.Validator.Tests.Integration"
+					 assembly="NHibernate.Validator.Tests"
+					 default-access="property"
+					 default-lazy="false">
+
+	<class name="FromNhibMetadata">
+
+		<id name="Id">
+			<generator class="assigned"/>
+		</id>
+
+			<property name="DateNotNull" not-null="true">
+			</property>
+
+
+		<property name="StrValue" type="String" column="str" length="5"/>
+
+		<property name="Dec" type="Decimal" precision="5" scale="2"/>
+
+		<property name="EnumV"/>
+
+	</class>
+</hibernate-mapping>
