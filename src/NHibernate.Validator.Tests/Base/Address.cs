@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Validator.Cfg.Loquacious;
 using NHibernate.Validator.Constraints;
 
@@ -20,7 +21,8 @@ namespace NHibernate.Validator.Tests.Base
 		private string line2;
 		private string state;
 		private string zip;
-		private AddressType addressType = AddressType.Phisical; 
+		private AddressType addressType = AddressType.Phisical;
+		private AddressFlag addressFlags = AddressFlag.Flag0; 
 
 		[Min(1), Range(Max = 2000), Max(2500)]
 		public long Id
@@ -77,6 +79,13 @@ namespace NHibernate.Validator.Tests.Base
 			get { return addressType; }
 			set { addressType = value; }
 		}
+
+		[Enum]
+		public AddressFlag AddressFlags
+		{
+			get { return addressFlags; }
+			set { addressFlags = value; }
+		}
 	}
 
 	public enum AddressType : byte
@@ -84,6 +93,16 @@ namespace NHibernate.Validator.Tests.Base
 		Legal = 0,
 		Phisical = 1
 	}
+
+	[Flags] 
+	public enum AddressFlag : byte
+	{
+		Flag0 = 0,
+		FlagA = 1,
+		FlagB = 2,
+		FlagC = 4
+	}
+
 
 	public class AddressDef: ValidationDef<Address>
 	{
@@ -107,7 +126,8 @@ namespace NHibernate.Validator.Tests.Base
 				.MatchWith("[0-9]+");
 			Define(x => x.InternalValid)
 				.IsTrue();
-		    Define(x => x.AddressType).Enum();
+			Define(x => x.AddressType).Enum();
+			Define(x => x.AddressFlags).Enum();
 		}
 	}
 }

@@ -145,6 +145,11 @@ namespace NHibernate.Validator.Tests.Integration
 			ie.MoveNext();
 			Column serialColumn = (Column)ie.Current;
 			Assert.AreEqual("AddressType in (0, 1)", serialColumn.CheckConstraint , "Validator annotation shoul generate valid check for Enums");
+
+			ie = classMapping.GetProperty("AddressFlags").ColumnIterator.GetEnumerator();
+			ie.MoveNext();
+			serialColumn = (Column)ie.Current;
+			Assert.IsNullOrEmpty(serialColumn.CheckConstraint, "Validator annotation shoul not generate check for [Flag]ed Enums");
 		}
 
 		/// <summary>
@@ -163,6 +168,7 @@ namespace NHibernate.Validator.Tests.Integration
 			a.Zip = "nonnumeric";
 			a.State = "NY";
 			a.AddressType = (AddressType) 42;
+			a.AddressFlags = AddressFlag.FlagA | AddressFlag.FlagB | (AddressFlag)66;
 			s = OpenSession();
 			tx = s.BeginTransaction();
 			s.Save(a);
@@ -175,7 +181,7 @@ namespace NHibernate.Validator.Tests.Integration
 			{
 				//success
 				var invalidValues = e.GetInvalidValues();
-				invalidValues.Should().Have.Count.EqualTo(3);
+				invalidValues.Should().Have.Count.EqualTo(4);
 				invalidValues.Satisfy("Environment.MESSAGE_INTERPOLATOR_CLASS does not work", ivs => ivs.All(iv => iv.Message.StartsWith("prefix_")));
 			}
 			finally
@@ -194,7 +200,8 @@ namespace NHibernate.Validator.Tests.Integration
 			a.State = "NY";
 			s.Save(a);
 			a.State = "TOOLONG";
-			a.AddressType = AddressType.Phisical; 
+			a.AddressType = AddressType.Phisical;
+			a.AddressFlags = AddressFlag.FlagA | AddressFlag.FlagB | AddressFlag.FlagC; 
 			try 
 			{
 				s.Flush();
