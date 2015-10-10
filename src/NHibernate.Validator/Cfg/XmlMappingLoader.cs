@@ -42,7 +42,7 @@ namespace NHibernate.Validator.Cfg
 				else
 				{
 					log.Warn(string.Format("Mapping configuration ignored: Assembly>{0}< Resource>{1}< File>{2}<", mc.Assembly,
-					                       mc.Resource, mc.File));
+										   mc.Resource, mc.File));
 				}
 			}
 		}
@@ -93,10 +93,18 @@ namespace NHibernate.Validator.Cfg
 
 		public void AddResource(Assembly assembly, string resource)
 		{
+			AddResourceImpl(assembly, resource, true);
+		}
+
+		private bool AddResourceImpl(Assembly assembly, string resource, bool throwIfNoStream)
+		{
 			log.Info("Mapping resource: " + resource);
 			Stream stream = assembly.GetManifestResourceStream(resource);
 			if (stream == null)
-				throw new ValidatorConfigurationException("Resource " + resource + " not found in assembly " + assembly.FullName);
+			{
+				if (throwIfNoStream) throw new ValidatorConfigurationException("Resource " + resource + " not found in assembly " + assembly.FullName);
+				return false;
+			}
 
 			try
 			{
@@ -106,6 +114,8 @@ namespace NHibernate.Validator.Cfg
 			{
 				stream.Close();
 			}
+
+			return true;
 		}
 
 		public void AddInputStream(Stream xmlInputStream, string fileName)
@@ -178,15 +188,10 @@ namespace NHibernate.Validator.Cfg
 		{
 			string resourceName = type.FullName + MappingFileDefaultExtension;
 			var ml = new XmlMappingLoader();
-			try
-			{
-				ml.AddResource(type.Assembly, resourceName);
-			}
-			catch (ValidatorConfigurationException)
-			{
-				return null;
-			}
-			return ml.Mappings[0];
+
+			return !ml.AddResourceImpl(type.Assembly, resourceName, false) 
+				? null 
+				: ml.Mappings[0];
 		}
 
 		public NhvMapping[] Mappings
