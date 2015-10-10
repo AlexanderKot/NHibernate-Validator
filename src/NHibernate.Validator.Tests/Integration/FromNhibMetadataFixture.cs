@@ -135,6 +135,38 @@ namespace NHibernate.Validator.Tests.Integration
 			Assert.AreEqual("EnumV in (0, 1)", serialColumn.CheckConstraint, "Validator annotation shoul generate valid check for Enums");
 		}
 
+		[Test]
+		public void ApplyFromComponentStringColumn()
+		{
+			var ve = Cfg.Environment.SharedEngineProvider.GetEngine();
+			var vl = ve.GetValidator<FromNhibMetadata>();
+
+			Assert.IsTrue(vl.HasValidationRules, "Validation rules must be created from Nhib metadata");
+
+			var sva = vl.GetMemberConstraints("Cmp").FirstOrDefault();
+
+			Assert.IsInstanceOf<ValidAttribute>(sva, "ValidAttribute should be generated from Nhib metadata for Component property");
+
+			var vli = vl as IClassValidatorImplementor;
+			vl = vli.ChildClassValidators[typeof(Cmp1)];
+
+			sva = vl.GetMemberConstraints("CStrValue").FirstOrDefault();
+
+			Assert.IsInstanceOf<LengthAttribute>(sva, "LengthAttribute should be generated from Nhib metadata for Cmp1.CStrValue property");
+			var sval = sva as LengthAttribute;
+
+			Assert.AreEqual(3, sval.Max);
+
+			vl = vli.ChildClassValidators[typeof(Cmp2)];
+
+			sva = vl.GetMemberConstraints("CStrValue1").FirstOrDefault();
+
+			Assert.IsInstanceOf<LengthAttribute>(sva, "LengthAttribute should be generated from Nhib metadata for Cmp2.CStrValue1 property");
+			sval = sva as LengthAttribute;
+
+			Assert.AreEqual(5, sval.Max);
+		}
+
 
 		[Test]
 		public void Events()
@@ -257,6 +289,77 @@ namespace NHibernate.Validator.Tests.Integration
 				s.Delete(saved);
 				t.Commit();
 			}
+		}
+
+		[Test]
+		public void EventsComponent()
+		{
+			var x = new FromNhibMetadata();
+			x.Id = 3;
+
+			x.StrValue = "12345";
+			x.DateNotNull = DateTime.Today;
+			x.Dec = 123.45M;
+			x.EnumV = En1.v1;
+
+			x.Cmp = new Cmp1();
+			x.Cmp.CEnumV = (En1)66;
+			x.Cmp.CStrValue = "1234";
+			x.Cmps2.Add(new Cmp2 { CEnumV1 = (En1)66, CStrValue1 = "12345XXXX" }); 
+
+			var s = OpenSession();
+			var tx = s.BeginTransaction();
+			try
+			{
+				s.Save(x);
+				tx.Commit();
+				Assert.Fail("entity should have been validated");
+			}
+			catch (InvalidStateException e)
+			{
+				//success
+				var invalidValues = e.GetInvalidValues();
+				invalidValues.Should().Have.Count.EqualTo(4);
+			}
+			finally
+			{
+				if (tx != null && !tx.WasCommitted)
+				{
+					tx.Rollback();
+				}
+				s.Close();
+			}
+
+			x.Cmps2.Clear();
+			x.Cmp.CEnumV = En1.v1;
+			x.Cmp.CStrValue = "123";
+
+			x.Cmps2.Add(new Cmp2 {CEnumV1 = En1.v2, CStrValue1 = "12345"}); 
+
+			try
+			{
+				using (s = OpenSession())
+				using (ITransaction t = s.BeginTransaction())
+				{
+					s.Save(x);
+					t.Commit();
+				}
+			}
+			catch (InvalidStateException)
+			{
+				Assert.Fail("Valid entity cause InvalidStateException");
+			}
+
+			// clean up
+			using (s = OpenSession())
+			using (ITransaction t = s.BeginTransaction())
+			{
+				var saved = s.Get<FromNhibMetadata>(3);
+				s.Delete(saved);
+				t.Commit();
+			}
+
+
 		}
 
 

@@ -63,6 +63,11 @@ namespace NHibernate.Validator.Cfg
 		/// </remarks>
 		public static void Initialize(this Configuration cfg, ValidatorEngine ve)
 		{
+			if (ve.AutoGenerateFromMapping || ve.ApplyToDDL)
+			{
+				cfg.BuildMappings();
+			}
+
 			if (ve.AutoGenerateFromMapping)
 			{
 				foreach (PersistentClass persistentClazz in cfg.ClassMappings)
@@ -113,7 +118,7 @@ namespace NHibernate.Validator.Cfg
 			{
 				if (persistentClass.MappedClass == null) return;
 				IClassValidator classValidator = ve.GetClassValidator(persistentClass.MappedClass);
-				classValidator.ConfigureFrom(persistentClass);
+				classValidator.ConfigureFrom(persistentClass.PropertyClosureIterator);
 			}
 			catch (Exception ex)
 			{

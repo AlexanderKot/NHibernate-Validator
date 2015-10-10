@@ -21,5 +21,18 @@
 
 		<property name="EnumV"/>
 
+		<component name="Cmp" class="Cmp1">
+			<property name="CEnumV" />
+			<property name="CStrValue"  type="String" length="3"/>
+		</component>
+
+		<set name="Cmps2" table="FromNhibMetadata_cmps2" lazy="true">
+			<key column="cmpsid"/>
+			<composite-element class="Cmp2">
+				<property name="CEnumV1" />
+				<property name="CStrValue1"  type="String" length="5"/>
+			</composite-element>
+		</set>
+
 	</class>
 </hibernate-mapping>

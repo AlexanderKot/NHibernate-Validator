@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
@@ -569,37 +570,36 @@ namespace NHibernate.Validator.Engine
 		/// <summary>
 		/// Create validators based on hibernate metadata if appropriative validator not defined explicitly
 		/// </summary>
-		/// <param name="persistentClass">Hibernate metadata to analize</param>
-		public void ConfigureFrom(PersistentClass persistentClass)
+		/// <param name="properties">Hibernate metadata to analize</param>
+		public void ConfigureFrom(IEnumerable<Property> properties)
 		{
-			var properties = persistentClass.PropertyClosureIterator;
-			foreach(var prop in properties.Where(p => p.IsUpdateable))
+			foreach(var prop in properties)
 			{
 
-				var rtcp = prop.Type.ReturnedClass;
-				var mcp = persistentClass.MappedClass.GetProperty(prop.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance); 
+				var propTp = prop.Type.ReturnedClass;
+				var propInfo = entityType.GetProperty(prop.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance); 
 
 				if (!prop.IsNullable 
-					&& (!rtcp.IsValueType
-						 || (mcp != null && mcp.PropertyType.IsGenericType && mcp.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))))
+					&& (!propTp.IsValueType
+						 || (propInfo != null && propInfo.PropertyType.IsGenericType && propInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))))
 				{
 					ConfigurePropValidatotBasedOnMapping<NotNullAttribute>(prop, null);
 				}
 
-				if (rtcp== typeof(string))
+				if (propTp== typeof(string))
 				{
 					ConfigurePropValidatotBasedOnMapping<LengthAttribute>(prop
 						, (attr, col) => attr.Max = col.Length);
 				}
-
-				if (rtcp.IsEnum)
+				else
+				if (propTp.IsEnum)
 				{
-					ConfigurePropValidatotBasedOnMapping<EnumAttribute>( prop, null);
+					ConfigurePropValidatotBasedOnMapping<EnumAttribute>(prop, null);
 				}
-
-				if (   rtcp == typeof(decimal) 
-					|| rtcp == typeof(double)
-					|| rtcp == typeof(float)
+				else
+				if (   propTp == typeof(decimal) 
+					|| propTp == typeof(double)
+					|| propTp == typeof(float)
 				   )
 				{
 					ConfigurePropValidatotBasedOnMapping<DigitsAttribute>(prop
@@ -608,54 +608,125 @@ namespace NHibernate.Validator.Engine
 											attr.FractionalDigits = col.Scale;
 										 } );
 				}
+				else
+				{
+					ConfigureFromChildComponentMapping(prop, propInfo);
+				}
 
-				//  Future -> IPropertyConstraint
+				//TODO:  Future -> IPropertyConstraint, but how to check this during Update on DB level? 
 
 				//TODO : Some extension mechanizm to allow used define rules to auto generate rules
 				//       with used defined validators (attributes) 
 
 			}
+		}
 
+		private void ConfigureFromChildComponentMapping(Property prop, PropertyInfo propInfo)
+		{
+			ChildComponentConfigurer(prop, propInfo
+					, (p, pi) =>
+					{
+						var attrs = new Attribute[] { new ValidAttribute() };
+						CreateMemberAttributes(entityType.GetMember(p.Name).FirstOrDefault(), attrs);
+						CreateChildValidator(pi, attrs);
+					}
+					, (tp, component) =>
+					{
+						if (!childClassValidators.ContainsKey(tp)) return;
+						var cv = childClassValidators[tp] as ClassValidator;
+						if (cv == null) return;
+						cv.ConfigureFrom(component.PropertyIterator);
+				
+					}
+				);
+		}
+
+		private void ChildComponentConfigurer(Property prop, MemberInfo propInfo,
+			Action<Property, MemberInfo> prepare,
+			Action<System.Type, Component> configure)
+		{
+			Component component = null;
+			Component component1 = null;
+			System.Type tp = null;
+			System.Type tp1 = null;
+
+			if (prop.IsComposite && !prop.BackRef)
+			{
+				component = prop.Value as Component;
+				if (component == null) return;
+				if (component.IsEmbedded) return;
+
+				tp = GetPropertyOrFieldType(propInfo);
+			}
+			else
+			{
+				var col = prop.Value as Mapping.Collection;
+				if (col == null) return;
+
+				if (TypeUtils.IsGenericDictionary(TypeUtils.GetType(propInfo)))
+				{
+					var clazzDictionary = TypeUtils.GetGenericTypesOfDictionary(propInfo);
+
+					component = col.Element as Component;
+					tp = clazzDictionary.Value;
+
+					component1 = col.Key as Component;
+					tp1 = clazzDictionary.Key;
+				}
+				else
+				{
+					component = col.Element as Component;
+					tp = TypeUtils.GetTypeOfMember(propInfo);
+				}
+			}
+
+			if (component == null && component1 == null) return;
+
+			prepare(prop, propInfo);
+
+			if (component != null)
+			{
+				configure(tp, component);
+			}
+			if (component1 != null)
+			{
+				configure(tp1, component1);
+			}
 		}
 
 		private void ConfigurePropValidatotBasedOnMapping<TAttr>(Property prop, Action<TAttr, Column> configAttribute)
-			where TAttr : EmbeddedRuleArgsAttribute, new()
+			where TAttr : Attribute, new()
 		{
 			var cons = GetMemberConstraints(prop.Name)
 						.Where(cns => cns is TAttr)
 						.ToArray();
 
-			if (cons.Length == 0)
+			if (cons.Length != 0) return;
+
+			var p = entityType.GetProperty(prop.Name);
+			if (p == null) return;
+
+			var col = prop.Value.ColumnIterator.First() as Column;
+			if (col == null) return;
+
+			var attr = new TAttr();
+			if (configAttribute != null)
 			{
-				var p = prop.PersistentClass.MappedClass.GetProperty(prop.Name);
-				if (p != null)
-				{
-
-					var col = prop.Value.ColumnIterator.First() as Column;
-					if (col != null)
-					{
-
-						var attr = new TAttr();
-						if (configAttribute != null) configAttribute(attr, col);
-
-						var propertyValidator = CreateOrGetValidator(attr);
-
-						if (propertyValidator != null)
-						{
-							membersToValidate.Add(new Member
-							{
-								ValidatorDef = new ValidatorDef(propertyValidator, null),
-								Getter = p
-							});
-
-
-							CreateMemberAttributes(
-								prop.PersistentClass.MappedClass.GetMember(prop.Name).FirstOrDefault()
-								, new Attribute[]{attr});
-						}
-					}
-				}
+				configAttribute(attr, col);
 			}
+
+			var propertyValidator = CreateOrGetValidator(attr);
+			if (propertyValidator == null) return;
+
+			membersToValidate.Add(new Member
+			{
+				ValidatorDef = new ValidatorDef(propertyValidator, null),
+				Getter = p
+			});
+
+
+			CreateMemberAttributes(entityType.GetMember(prop.Name).FirstOrDefault()
+									, new Attribute[]{attr});
 		}
 
 		/// <summary>

@@ -75,7 +75,7 @@ namespace NHibernate.Validator.Engine
 			{
 			}
 
-			public void ConfigureFrom(PersistentClass persistentClass)
+			public void ConfigureFrom(IEnumerable<Property> properties)
 			{
 			}
 
