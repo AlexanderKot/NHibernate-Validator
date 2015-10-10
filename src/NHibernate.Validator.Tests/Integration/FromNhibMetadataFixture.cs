@@ -168,6 +168,37 @@ namespace NHibernate.Validator.Tests.Integration
 		}
 
 
+
+		[Test]
+		public void ApplyConstraintsOnEmbededeComponentsColumns()
+		{
+			var classMapping = cfg.GetClassMapping(typeof(FromNhibMetadata));
+			var ie = classMapping.GetProperty("Cmp").ColumnIterator.GetEnumerator();
+			ie.MoveNext();
+			var col = (Column)ie.Current;
+			while (col.Name != "CEnumV")
+			{
+				ie.MoveNext();
+				col = (Column)ie.Current;
+			}
+			Assert.AreEqual("CEnumV in (0, 1)", col.CheckConstraint, "Validator annotation shoul generate valid check for CEnumV column (property of embedded component)");
+
+			var prop = classMapping.GetProperty("Cmps2");
+			var col1 = prop.Value as Mapping.Collection;
+			var cmp = col1.Element as Component;
+
+			ie = cmp.ColumnIterator.GetEnumerator();
+			ie.MoveNext();
+			col = (Column)ie.Current;
+			while (col.Name != "CEnumV1")
+			{
+				ie.MoveNext();
+				col = (Column)ie.Current;
+			}
+			Assert.AreEqual("CEnumV1 in (0, 1)", col.CheckConstraint, "Validator annotation shoul generate valid check for CEnumV1 column (property of embedded component in collection)");
+		}
+
+
 		[Test]
 		public void Events()
 		{
@@ -289,6 +320,7 @@ namespace NHibernate.Validator.Tests.Integration
 				s.Delete(saved);
 				t.Commit();
 			}
+
 		}
 
 		[Test]
@@ -361,6 +393,7 @@ namespace NHibernate.Validator.Tests.Integration
 
 
 		}
+
 
 
 	}

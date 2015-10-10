@@ -759,27 +759,31 @@ namespace NHibernate.Validator.Engine
 		{
 			foreach (var childGetter in childGetters)
 			{
-				Property property = properties.FirstOrDefault(p=> p.Name == childGetter.Name);
-				if (property != null && property.IsComposite && !property.BackRef)
+				var property = properties.FirstOrDefault(p=> p.Name == childGetter.Name);
+				if (property == null) continue;
+
+				if (property.IsComposite && !property.BackRef)
 				{
-					Component component = (Component) property.Value;
-					if (component.IsEmbedded)
-					{
-						return;
-					}
-					System.Type propertyOrFieldType = GetPropertyOrFieldType(childGetter);
-					IClassValidator componentValidator;
-					if (childClassValidators.TryGetValue(propertyOrFieldType, out componentValidator))
-					{
-						var componentClassValidator = componentValidator as ClassValidator;
-						if(componentClassValidator != null)
-						{
-							IEnumerable<Property> persistentProperties = component.PropertyIterator;
-							componentClassValidator.Apply(persistentProperties);
-							componentClassValidator.ApplyToChildrenComponentsValidators(persistentProperties);
-						}
-					}
+					var component = property.Value as Component;
+					if (component == null) continue;
+					if (component.IsEmbedded) return;  //To be compatible with initial algorithm
 				}
+
+				ChildComponentConfigurer(property, childGetter
+					, (p, pi) => { }
+					, (tp, component) =>
+					{
+						IClassValidator componentValidator;
+						if (!childClassValidators.TryGetValue(tp, out componentValidator)) return;
+
+						var componentClassValidator = componentValidator as ClassValidator;
+						if (componentClassValidator == null) return;
+
+						var props = component.PropertyIterator;
+						componentClassValidator.Apply(props);
+						componentClassValidator.ApplyToChildrenComponentsValidators(props);
+					}
+					);
 			}
 		}
 
