@@ -706,7 +706,7 @@ namespace NHibernate.Validator.Engine
 			var p = entityType.GetProperty(prop.Name);
 			if (p == null) return;
 
-			var col = prop.Value.ColumnIterator.First() as Column;
+			var col = prop.Value.ColumnIterator.FirstOrDefault() as Column;
 			if (col == null) return;
 
 			var attr = new TAttr();
