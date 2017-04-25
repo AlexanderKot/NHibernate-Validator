@@ -1,5 +1,6 @@
 using System;
 using NHibernate.Proxy;
+using NHibernate.Proxy.DynamicProxy;
 
 namespace NHibernate.Validator.Engine
 {
@@ -18,6 +19,13 @@ namespace NHibernate.Validator.Engine
 			{
 				return proxy.HibernateLazyInitializer.PersistentClass;
 			}
+
+			var proxyObjectReference = entityInstance as IProxy;
+			if (proxyObjectReference != null)
+			{
+				return entityInstance.GetType().BaseType;
+			}
+
 			return null;
 		}
 
