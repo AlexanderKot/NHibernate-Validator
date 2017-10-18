@@ -24,7 +24,7 @@ namespace NHibernate.Validator.Tests.CustomValidator
 		[Test]
 		public void ExceptionMustBeThrown()
 		{
-			ActionAssert.Throws<HibernateValidatorException>(() => new ClassValidator(typeof (Foo)));
+			Executing.This(() => new ClassValidator(typeof(Foo))).Should().Throw<HibernateValidatorException>();
 		}
 
 		/// <summary>
@@ -33,7 +33,7 @@ namespace NHibernate.Validator.Tests.CustomValidator
 		[Test]
 		public void MessageNull()
 		{
-			ActionAssert.Throws<HibernateValidatorException>(() => new ClassValidator(typeof(Foo2)));
+			Executing.This(() => new ClassValidator(typeof(Foo2))).Should().Throw<HibernateValidatorException>();
 		}
 	}
 }

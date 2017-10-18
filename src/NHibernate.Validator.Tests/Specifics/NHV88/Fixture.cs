@@ -11,7 +11,7 @@ namespace NHibernate.Validator.Tests.Specifics.NHV88
 	{
 		private ValidatorEngine validatorEngine;
 
-		[TestFixtureSetUp]
+		[SetUp]
 		public void CreateValidatorEngine()
 		{
 			var configure = new FluentConfiguration();

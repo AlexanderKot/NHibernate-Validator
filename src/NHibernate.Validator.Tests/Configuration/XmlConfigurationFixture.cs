@@ -87,13 +87,13 @@ namespace NHibernate.Validator.Tests.Configuration
 			XmlDocument cfgXml = new XmlDocument();
 			cfgXml.LoadXml(xml);
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
-			ActionAssert.Throws<ValidatorConfigurationException>(() => new XmlConfiguration(xtr));
+			Executing.This(() => new XmlConfiguration(xtr)).Should().Throw<ValidatorConfigurationException>();
 		}
 
 		[Test]
 		public void NullReader()
 		{
-			ActionAssert.Throws<ValidatorConfigurationException>(() => new XmlConfiguration(null));
+			Executing.This(() => new XmlConfiguration(null)).Should().Throw<ValidatorConfigurationException>();
 		}
 
 		[Test]
@@ -106,7 +106,7 @@ namespace NHibernate.Validator.Tests.Configuration
 			XmlDocument cfgXml = new XmlDocument();
 			cfgXml.LoadXml(xml);
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
-			ActionAssert.Throws<ValidatorConfigurationException>(() =>new XmlConfiguration(xtr));
+			Executing.This(() => new XmlConfiguration(xtr)).Should().Throw<ValidatorConfigurationException>();
 		}
 
 		[Test]

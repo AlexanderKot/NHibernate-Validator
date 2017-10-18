@@ -20,7 +20,7 @@ namespace NHibernate.Validator.Tests.ValidatorsTest
 			Assert.IsTrue(v.IsValid(null, null));
 
 			v = new PatternAttribute(@"(19|20)\d\d([- /.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])", RegexOptions.Singleline,
-			                         null);
+									 null);
 			Assert.IsTrue(v.IsValid("1999-01-01", null));
 			Assert.IsFalse(v.IsValid("1999/01-01", null));
 		}
@@ -31,7 +31,7 @@ namespace NHibernate.Validator.Tests.ValidatorsTest
 			var e = new WithRegEx { Value = "aaa" };
 			var ca = new ClassValidator(typeof(WithRegEx));
 			var iv = ca.GetInvalidValues(e).ToArray();
-			ActionAssert.NotThrow(() => iv = ca.GetInvalidValues(e).ToArray());
+			Executing.This(() => iv = ca.GetInvalidValues(e).ToArray()).Should().NotThrow();
 		}
 	}
 

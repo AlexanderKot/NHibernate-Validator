@@ -24,7 +24,7 @@ namespace NHibernate.Validator.Tests.Engine.Tagging
 		private object maxTypeId = (new MaxAttribute()).TypeId;
 		private ValidatorEngine ve;
 
-		[TestFixtureSetUp]
+		[SetUp]
 		public void CreateEngine()
 		{
 			var conf = new XmlConfiguration();

@@ -98,7 +98,7 @@ namespace NHibernate.Validator.Tests.Configuration.Loquacious
 		public void ShouldWorkWithEnum()
 		{
 			var v = new ValidationDef<KnownRules>();
-			ActionAssert.NotThrow(() => v.Define(x => x.Enum));
+			Executing.This(() => v.Define(x => x.Enum)).Should().NotThrow();
 		}
 
 		[Test]

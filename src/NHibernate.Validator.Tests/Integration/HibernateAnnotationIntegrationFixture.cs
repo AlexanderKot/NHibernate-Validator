@@ -88,7 +88,7 @@ namespace NHibernate.Validator.Tests.Integration
 		[Test]
 		public void InvalidInitializer()
 		{
-			ActionAssert.Throws<ArgumentNullException>(() => ValidatorInitializer.Initialize(null));
+			Executing.This(() => ValidatorInitializer.Initialize(null)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -149,7 +149,9 @@ namespace NHibernate.Validator.Tests.Integration
 			ie = classMapping.GetProperty("AddressFlags").ColumnIterator.GetEnumerator();
 			ie.MoveNext();
 			serialColumn = (Column)ie.Current;
-			Assert.IsNullOrEmpty(serialColumn.CheckConstraint, "Validator annotation shoul not generate check for [Flag]ed Enums");
+
+			serialColumn.CheckConstraint.Should("Validator annotation should not generate check for [Flag]ed Enums").Be.NullOrEmpty();
+			//Assert.IsNullOrEmpty(serialColumn.CheckConstraint, "Validator annotation should not generate check for [Flag]ed Enums");
 		}
 
 		/// <summary>

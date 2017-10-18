@@ -4,7 +4,7 @@
 	
 	<session-factory name="NHibernate.Validator.Demo">
 		<property name="connection.connection_string">
-			Data Source=localhost\SQLEXPRESS;Initial Catalog=nhibernate;Integrated Security=True;Pooling=False
+			Data Source=localhost;Initial Catalog=nhibernate;Pooling=False;Persist Security Info=True;User ID=sa;Password=sa2014~
 		</property>
 		<property name="dialect">NHibernate.Dialect.MsSql2005Dialect</property>
 		<property name="hbm2ddl.auto">create-drop</property>

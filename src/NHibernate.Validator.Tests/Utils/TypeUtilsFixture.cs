@@ -147,8 +147,8 @@ namespace NHibernate.Validator.Tests.Utils
 		{
 			TestingClass tc = new TestingClass();
 			MemberInfo propMember = typeof(TestingClass).GetProperty("Problem");
-			ActionAssert.Throws<InvalidStateException>(
-				() =>TypeUtils.GetMemberValue(tc, propMember));
+
+			Executing.This(() => TypeUtils.GetMemberValue(tc, propMember)).Should().Throw<InvalidStateException>();
 		}
 
 		[Test]
@@ -166,7 +166,7 @@ namespace NHibernate.Validator.Tests.Utils
 		public void DecodeMemberAccessExpression()
 		{
 			Assert.That(TypeUtils.DecodeMemberAccessExpression<TestingClass, string>(x => x.simpleStr),
-			            Is.EqualTo(TypeUtils.GetPropertyOrField(typeof (TestingClass), "simpleStr")));
+						Is.EqualTo(TypeUtils.GetPropertyOrField(typeof (TestingClass), "simpleStr")));
 
 			Assert.That(TypeUtils.DecodeMemberAccessExpression<TestingClass, int>(x => x.IntProp),
 									Is.EqualTo(TypeUtils.GetPropertyOrField(typeof(TestingClass), "IntProp")));

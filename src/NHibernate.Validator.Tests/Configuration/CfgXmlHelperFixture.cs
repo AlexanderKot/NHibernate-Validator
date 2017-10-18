@@ -23,7 +23,7 @@ namespace NHibernate.Validator.Tests.Configuration
 		[Test]
 		public void InvalidValidatorMode()
 		{
-			ActionAssert.Throws<ValidatorConfigurationException>(()=>CfgXmlHelper.ValidatorModeConvertFrom("Not supported"));
+			Executing.This(() => CfgXmlHelper.ValidatorModeConvertFrom("Not supported")).Should().Throw<ValidatorConfigurationException>();
 		}
 	}
 }

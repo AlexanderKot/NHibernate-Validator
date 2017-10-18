@@ -18,7 +18,7 @@ namespace NHibernate.Validator.Tests.Configuration
 		public void LoadMappingsNull()
 		{
 			XmlMappingLoader ml = new XmlMappingLoader();
-			ActionAssert.Throws<ArgumentNullException>(() => ml.LoadMappings(null));
+			Executing.This(() => ml.LoadMappings(null)).Should().Throw<ArgumentNullException>();
 		}
 
 		[Test]
@@ -85,7 +85,7 @@ namespace NHibernate.Validator.Tests.Configuration
 			XmlTextReader xtr = new XmlTextReader(xml, XmlNodeType.Document, null);
 			XmlConfiguration cfg = new XmlConfiguration(xtr);
 			XmlMappingLoader ml = new XmlMappingLoader();
-			ActionAssert.Throws<ValidatorConfigurationException>(() => ml.LoadMappings(cfg.Mappings));
+			Executing.This(() => ml.LoadMappings(cfg.Mappings)).Should().Throw<ValidatorConfigurationException>();
 		}
 
 		[Test]
@@ -127,7 +127,7 @@ namespace NHibernate.Validator.Tests.Configuration
 			XmlMappingLoader ml = new XmlMappingLoader();
 			using (StreamReader sr = new StreamReader(tmpf))
 			{
-				ActionAssert.Throws<ValidatorConfigurationException>(() => ml.AddInputStream(sr.BaseStream, tmpf));
+				Executing.This(() => ml.AddInputStream(sr.BaseStream, tmpf)).Should().Throw<ValidatorConfigurationException>();
 			}
 		}
 
@@ -163,7 +163,7 @@ namespace NHibernate.Validator.Tests.Configuration
 				sw.Flush();
 			}
 			XmlMappingLoader ml = new XmlMappingLoader();
-			ActionAssert.Throws<ValidatorConfigurationException>(() =>ml.AddFile(tmpf));
+			Executing.This(() => ml.AddFile(tmpf)).Should().Throw<ValidatorConfigurationException>();
 		}
 
 		[Test]
@@ -260,7 +260,7 @@ namespace NHibernate.Validator.Tests.Configuration
 		{
 			// here we test only the exception since the other tests are included in MappingLoader
 			MappingDocumentParser mdp = new MappingDocumentParser();
-			ActionAssert.Throws<ArgumentNullException>(() => mdp.Parse(null));
+			Executing.This(() => mdp.Parse(null)).Should().Throw<ArgumentNullException>();
 		}
 	}
 }

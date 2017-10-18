@@ -37,14 +37,14 @@ namespace NHibernate.Validator.Tests.Configuration
 		{
 			NhvmClassAttributename attributename = new NhvmClassAttributename();
 			attributename.Text = new string[] { "assertanimal" };
-			ActionAssert.Throws<InvalidAttributeNameException>(() => RuleAttributeFactory.CreateAttributeFromClass(typeof(Suricato), attributename));
+			Executing.This(() => RuleAttributeFactory.CreateAttributeFromClass(typeof(Suricato), attributename)).Should().Throw<InvalidAttributeNameException>();
 		}
 
 		[Test]
 		public void CreateAttributeFromRule()
 		{
 			// Testing exception when a new element is added in XSD but not in factory
-			ActionAssert.Throws<ValidatorConfigurationException>(() => RuleAttributeFactory.CreateAttributeFromRule("AnyObject", "", ""));
+			Executing.This(() => RuleAttributeFactory.CreateAttributeFromRule("AnyObject", "", "")).Should().Throw<ValidatorConfigurationException>();
 
 			// For wellKnownRules we can't do a sure tests because we don't have a way to auto-check all
 			// classes derivered from serialization.
@@ -192,7 +192,8 @@ namespace NHibernate.Validator.Tests.Configuration
 			MemberInfo mi;
 
 			mi = typeof(WellKnownRules).GetField("AP");
-			ActionAssert.Throws<InvalidPropertyNameException>(() =>rm.GetMemberAttributes(mi));
+			Executing.This(() => rm.GetMemberAttributes(mi)).Should().Throw<InvalidPropertyNameException>();
+
 		}
 
 		[Test]
@@ -222,13 +223,13 @@ namespace NHibernate.Validator.Tests.Configuration
 		public void RegexOptionsParsing()
 		{
 			Assert.AreEqual(RegexOptions.Compiled | RegexOptions.CultureInvariant,
-			                RuleAttributeFactory.ParsePatternFlags("cOmPiLed | CultureInvariant"));
+							RuleAttributeFactory.ParsePatternFlags("cOmPiLed | CultureInvariant"));
 			Assert.AreEqual(RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace | RegexOptions.IgnoreCase,
-			                RuleAttributeFactory.ParsePatternFlags("Compiled|IgnoreCase|IgnorePatternWhitespace"));
+							RuleAttributeFactory.ParsePatternFlags("Compiled|IgnoreCase|IgnorePatternWhitespace"));
 
 			// Ignore strange user ;)
 			Assert.AreEqual(RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace,
-			                RuleAttributeFactory.ParsePatternFlags("Compiled||  | |IgnorePatternWhitespace"));
+							RuleAttributeFactory.ParsePatternFlags("Compiled||  | |IgnorePatternWhitespace"));
 		}
 	}
 }

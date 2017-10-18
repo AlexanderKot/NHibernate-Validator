@@ -42,7 +42,7 @@ namespace NHibernate.Validator.Tests
 			XmlConfigurator.Configure();
 		}
 
-		[TestFixtureSetUp]
+		[SetUp]
 		public void TestFixtureSetUp()
 		{
 			try
@@ -59,7 +59,7 @@ namespace NHibernate.Validator.Tests
 			}
 		}
 
-		[TestFixtureTearDown]
+		[TearDown]
 		public void TestFixtureTearDown()
 		{
 			DropSchema();
