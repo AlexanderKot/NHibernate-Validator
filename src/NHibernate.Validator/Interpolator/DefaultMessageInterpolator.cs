@@ -94,7 +94,7 @@ namespace NHibernate.Validator.Interpolator
 
 			foreach (PropertyInfo property in clazz.GetProperties())
 			{
-				attributeParameters.Add(property.Name.ToLowerInvariant(), property.GetValue(attribute, null));
+				attributeParameters.Add(string.Intern(property.Name.ToLowerInvariant()), property.GetValue(attribute, null));
 			}
 		}
 
