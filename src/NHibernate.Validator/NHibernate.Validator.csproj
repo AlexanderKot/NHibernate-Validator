@@ -4,7 +4,7 @@
     <Product>NHibernate.Validator</Product>
     <Title>NHibernate.Validator</Title>
     <Description>NHibernate Validator is a powerful and extensible framework to validate objects using the .Net Platform. Born as a port of Hibernate Validator 3.0.0 project at december of 2007. Later on, many improvements and changes were made to the Core and API, and now we can say that NHibernate Validator is more than just a port. NHibernate Validator is entirely written in C#. The first release of NHibernate Validator was entirely developed by Dario Quintana, Gustavo Ringel and Fabio Maulo.</Description>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net48;netstandard2.0</TargetFrameworks>
     <NoWarn>1591</NoWarn>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\NHibernate.Validator.snk</AssemblyOriginatorKeyFile>
@@ -12,22 +12,20 @@
     <PackageReleaseNotes>
     </PackageReleaseNotes>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\NHibernate.Validator.snk" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
-    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
-    <PackageReference Include="NHibernate" Version="5.0.0" />
+  <ItemGroup>
+    <PackageReference Include="Iesi.Collections" Version="4.1.1" />
+    <PackageReference Include="NHibernate" Version="5.5.2" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net48'">
+    <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <PackageReference Include="Iesi.Collections" Version="4.0.4" />
-    <PackageReference Include="NHibernate" Version="5.1.0" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
-    <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="StringInterpolation.express" />

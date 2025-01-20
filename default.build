@@ -10,7 +10,7 @@
 	<property name="doc.dir" value="${root.dir}/doc" />
 	<property name="example.dir" value="${root.dir}/examples" />
 
-	<property name="net.target-fx" value="net461" />
+	<property name="net.target-fx" value="net48" />
 	<property name="net.core-fx" value="netcoreapp2.0" />
 	<property name="net.standard" value="netstandard2.0" />
 

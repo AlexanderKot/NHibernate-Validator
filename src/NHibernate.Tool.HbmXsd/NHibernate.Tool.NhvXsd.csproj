@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Product>NHibernate.Tool.NhvXsd</Product>
     <Description>NHV schema generator.</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <OutputType>Exe</OutputType>
     <AssemblyName>NhvXsd</AssemblyName>
     <IsPackable>false</IsPackable>
