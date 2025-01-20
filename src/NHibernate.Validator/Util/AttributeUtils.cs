@@ -44,7 +44,7 @@ namespace NHibernate.Validator.Util
 			if (property.PersistentClass == null)
 				return false;
 
-			var tp = System.Type.GetType(((RootClass) property.PersistentClass).RootClazz.ClassName);
+			var tp = System.Type.GetType(property.PersistentClass.ClassName);
 			var member = (MemberInfo) tp.GetProperty(property.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
 			if (member == null)
@@ -57,7 +57,5 @@ namespace NHibernate.Validator.Util
 			return attributes.Length > 1;
 
 		}
-
-
 	}
 }
