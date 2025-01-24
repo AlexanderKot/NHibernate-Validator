@@ -3,13 +3,13 @@
   <PropertyGroup>
     <Product>NHibernate.Validator.Specific.Tests</Product>
     <Description>Unit tests of NHibernate Validator</Description>
-    <TargetFrameworks>net48;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net48;netcoreapp3.1;net6.0</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'  Or '$(TargetFramework)'=='net6.0'">
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
@@ -46,7 +46,7 @@
   <ItemGroup Condition="'$(TargetFramework)'=='net48'">
     <PackageReference Include="NHibernate.Envers" Version="5.5.2" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1' Or '$(TargetFramework)'=='net6.0'">
     <PackageReference Include="Iesi.Collections" Version="4.1.1" />
     <PackageReference Include="NUnitLite" Version="3.9.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.4.3" />

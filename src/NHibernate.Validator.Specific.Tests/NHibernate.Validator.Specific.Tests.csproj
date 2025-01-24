@@ -3,13 +3,13 @@
   <PropertyGroup>
     <Product>NHibernate.Validator.Specific.Tests</Product>
     <Description>Unit tests of country specific validators</Description>
-    <TargetFrameworks>net48;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net48;netcoreapp3.1;net6.0</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' Or '$(TargetFramework)'=='net6.0'">
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
