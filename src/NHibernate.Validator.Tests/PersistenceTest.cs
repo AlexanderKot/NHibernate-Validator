@@ -1,8 +1,12 @@
 using System.Collections;
+using System.IO;
 using System.Reflection;
+
 using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Tool.hbm2ddl;
+
 using NUnit.Framework;
 
 namespace NHibernate.Validator.Tests
@@ -137,6 +141,8 @@ namespace NHibernate.Validator.Tests
 			cfg = new NHibernate.Cfg.Configuration();
 			if (TestConfigurationHelper.hibernateConfigFile != null)
 				cfg.Configure(TestConfigurationHelper.hibernateConfigFile);
+
+			cfg.Configure(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\NHibernate.Validator.Tests.dll.config");
 
 			Assembly assembly = Assembly.Load(MappingsAssembly);
 
