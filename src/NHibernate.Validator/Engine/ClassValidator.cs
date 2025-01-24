@@ -243,6 +243,16 @@ namespace NHibernate.Validator.Engine
 					membersToValidateFor1Memeber.Clear();
 				}
 			}
+
+			entityValidators.TrimExcess();
+			membersToValidate.TrimExcess();
+			childGetters.TrimExcess();
+
+			foreach (var attrs in membersAttributesDictionary.Values)
+				attrs.TrimExcess();
+#if !NETFX
+			membersAttributesDictionary.TrimExcess();
+#endif
 		}
 
 		private void RemoveSameTypeValidatorWithIntersectingTags(List<Member> membersToValidateFor1Memeber, ITagableRule newAttr)
